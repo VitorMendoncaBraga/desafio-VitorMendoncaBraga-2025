@@ -54,68 +54,150 @@ class AbrigoAnimais {
         toys: ["SKATE", "RATO"],
       },
     ];
-    try {
-      const brinquedosPessoa1List = brinquedosPessoa1.split(",");
-      const brinquedosPessoa2List = brinquedosPessoa2.split(",");
-      const ordemAnimaisList = ordemAnimais.split(",");
 
-      let animalDaIteraçaoAntiga = "";
-      let brinquedoDaIteraçaoAntigaPessoa1 = "";
-      let brinquedoDaIteraçaoAntigaPessoa2 = "";
-      const animalPessoa1 = ordemAnimaisList[0]
-      const animalPessoa2 = ordemAnimaisList[1]
+    const brinquedosPessoa1List = brinquedosPessoa1.split(",");
+    const brinquedosPessoa2List = brinquedosPessoa2.split(",");
+    const ordemAnimaisList = ordemAnimais.split(",");
+    const ordemAniamaisListSort = ordemAnimaisList.sort();
+    // Conferindo se os animais são válidos
 
-      if(ordemAnimaisList.lenght > 2){
+    let setAnimais = new Set();
+    for (let animal of ordemAnimaisList) {
+      if (!animaisDisponiveis.includes(animal) || setAnimais.has(animal)) {
         return {
-          erro: "Não pode levar mais 3 aniam" 
+          erro: "Animal inválido",
+        };
+      }
+
+      setAnimais.add(animal);
+    }
+
+    // Conferindo se os brinquedos da pessoa 1 são válidos
+    let setBrinquedosPessoa1 = new Set();
+    for (let brinquedo of brinquedosPessoa1List) {
+      if (
+        !brinquedosValidos.includes(brinquedo) ||
+        setBrinquedosPessoa1.has(brinquedo)
+      ) {
+        return {
+          erro: "Brinquedo inválido",
+        };
+      }
+      setBrinquedosPessoa1.add(brinquedo);
+    }
+    // Conferindo se os brinquedos da pessoa 2 são válidos
+    let setBrinquedosPessoa2 = new Set();
+    for (let brinquedo of brinquedosPessoa2List) {
+      if (
+        !brinquedosValidos.includes(brinquedo) ||
+        setBrinquedosPessoa2.has(brinquedo)
+      ) {
+        return {
+          erro: "Brinquedo inválido",
+        };
+      }
+
+      setBrinquedosPessoa2.add(brinquedo);
+    }
+
+    const resultado = {
+      lista: [],
+    };
+
+    const animaisAdotadosPessoa1 = [];
+    const animaisAdotadosPessoa2 = [];
+
+    function verificandoOrdem(brinquedosPessoaX, brinquedosFavoritosAnimal) {
+      let index = 0;
+
+      for (let brinquedo of brinquedosPessoaX) {
+        if (brinquedo === brinquedosFavoritosAnimal[index]) {
+          index++;
+        }
+        if (index === brinquedosFavoritosAnimal.length) {
+          return true;
         }
       }
 
-      // Conferindo se os animais são válidos
-      ordemAnimaisList.forEach((animal) => {
-        if (!animaisDisponiveis.includes(animal)) {
-          throw new Error(animal + " é um animal inválido");
-        }
-
-        if (animal == animalDaIteraçaoAntiga) {
-          throw new Error("Animal inválido");
-        }
-
-        animalDaIteraçaoAntiga = animal;
-      });
-      // Conferindo se os brinquedos da pessoa 1 são válidos
-      brinquedosPessoa1List.forEach((brinquedo) => {
-        if (!brinquedosValidos.includes(brinquedo)) {
-          throw new Error("Brinquedo inválido");
-        }
-
-        if (brinquedo == brinquedoDaIteraçaoAntigaPessoa1) {
-          throw new Error("Brinquedo inválido (Duplicado)");
-        }
-
-        brinquedoDaIteraçaoAntigaPessoa1 = brinquedo;
-      });
-      // Conferindo se os brinquedos da pessoa 2 são válidos
-      brinquedosPessoa2List.forEach((brinquedo) => {
-        if (!brinquedosValidos.includes(brinquedo)) {
-          throw new Error("Brinquedo inválido");
-        }
-
-        if (brinquedo == brinquedoDaIteraçaoAntigaPessoa2) {
-          throw new Error("Brinquedo inválido (Duplicado)");
-        }
-
-        brinquedoDaIteraçaoAntigaPessoa2 = brinquedo;
-      });
-
-      const resultado = []
-
-      
-
-
-    } catch (error) {
-      console.log(error);
+      return false;
     }
+
+    function verificandoCompatibilidade(
+      brinquedosPessoaX,
+      brinquedosFavoritosAnimal,
+      nomeAnimal,
+      animaisAdotadosPessoaX
+    ) {
+      if(nomeAnimal != "Loco"){
+        const ordemValida = verificandoOrdem(
+          brinquedosPessoaX,
+          brinquedosFavoritosAnimal
+        );
+        if (!ordemValida) {
+          return false;
+        }
+      }
+      else{
+        if(animaisAdotadosPessoaX.length == 0){
+          return false
+        }
+      }
+
+      for (let brinquedo of brinquedosFavoritosAnimal) {
+        if (!brinquedosPessoaX.has(brinquedo)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Verificando os brinquedos favoritos de cada animal selecionado
+    setAnimais.forEach((animal) => {
+      const brinquedosFavoritos = animais.find(
+        (pet) => pet.name == animal
+      ).toys;
+      console.log(brinquedosFavoritos);
+
+      const pessoa1Disponivel = verificandoCompatibilidade(
+        setBrinquedosPessoa1,
+        brinquedosFavoritos
+      );
+      const pessoa2Disponivel = verificandoCompatibilidade(
+        setBrinquedosPessoa2,
+        brinquedosFavoritos
+      );
+      console.log("Pessoa 1 disponível: " + pessoa1Disponivel);
+      console.log("Pessoa 2 disponível: " + pessoa2Disponivel);
+
+      if (
+        (pessoa1Disponivel && pessoa2Disponivel) ||
+        (!pessoa1Disponivel && !pessoa2Disponivel)
+      ) {
+        return resultado.lista.push(`${animal} - abrigo`);
+      }
+
+      if (pessoa1Disponivel) {
+        if (
+          animaisAdotadosPessoa1.length == 3 ||
+          animaisAdotadosPessoa1.includes("Mimi" || "Fofo" || "Zero")
+        ) {
+          return resultado.lista.push(`${animal} - abrigo`);
+        }
+
+        animaisAdotadosPessoa1.push(animal);
+        return resultado.lista.push(`${animal} - pessoa 1`);
+      }
+      if (
+        animaisAdotadosPessoa2.length == 3 ||
+        animaisAdotadosPessoa2.includes("Mimi" || "Fofo" || "Zero")
+      ) {
+        return resultado.lista.push(`${animal} - abrigo`);
+      }
+      animaisAdotadosPessoa2.push(animal);
+      return resultado.lista.push(`${animal} - pessoa 2`);
+    });
+
+    return resultado;
   }
 }
 

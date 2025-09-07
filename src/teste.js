@@ -2,4 +2,6 @@ import { AbrigoAnimais } from "./abrigo-animais.js";
 
 const abrigoAnimais = new AbrigoAnimais()
 
-abrigoAnimais.encontraPessoas('RATO,BOLA','RATO,NOVELO', 'Rex,Mimi')
+const resultado = abrigoAnimais.encontraPessoas('BOLA,LASER',
+      'BOLA,NOVELO,RATO,LASER', 'Mimi,Fofo,Rex,Bola')
+console.log(resultado)
